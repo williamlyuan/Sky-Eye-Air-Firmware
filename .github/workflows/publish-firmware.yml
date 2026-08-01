@@ -1,0 +1,184 @@
+name: Publish firmware release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Firmware version without the v prefix
+        required: true
+        type: string
+
+      filename:
+        description: Release asset filename
+        required: true
+        type: string
+
+      release_notes:
+        description: Release notes
+        required: false
+        type: string
+
+      download_url:
+        description: Temporary URL for the staged firmware binary
+        required: true
+        type: string
+
+      size:
+        description: Expected binary size in bytes
+        required: true
+        type: string
+
+      sha256:
+        description: Expected SHA-256 checksum
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: firmware-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download, verify, and publish firmware
+        uses: actions/github-script@v7
+        env:
+          VERSION: ${{ inputs.version }}
+          FILENAME: ${{ inputs.filename }}
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+          DOWNLOAD_URL: ${{ inputs.download_url }}
+          EXPECTED_SIZE: ${{ inputs.size }}
+          EXPECTED_SHA256: ${{ inputs.sha256 }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const crypto = require("crypto");
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const version = process.env.VERSION;
+            const filename = process.env.FILENAME;
+            const expectedSize = Number(process.env.EXPECTED_SIZE);
+            const expectedSha256 = process.env.EXPECTED_SHA256.toLowerCase();
+
+            if (!/^\d+\.[\dA-Za-z._-]+$/.test(version)) {
+              core.setFailed("Invalid firmware version.");
+              return;
+            }
+
+            if (!/^firmware-[A-Za-z0-9._-]+\.bin$/.test(filename)) {
+              core.setFailed("Invalid firmware filename.");
+              return;
+            }
+
+            const response = await fetch(process.env.DOWNLOAD_URL, {
+              redirect: "follow"
+            });
+
+            if (!response.ok) {
+              core.setFailed(
+                "Firmware download failed: " +
+                response.status +
+                " " +
+                response.statusText
+              );
+              return;
+            }
+
+            const binary = Buffer.from(await response.arrayBuffer());
+            const actualSha256 = crypto
+              .createHash("sha256")
+              .update(binary)
+              .digest("hex");
+
+            if (
+              binary.length !== expectedSize ||
+              actualSha256 !== expectedSha256
+            ) {
+              core.setFailed(
+                "Firmware integrity check failed. " +
+                "Size: " +
+                binary.length +
+                ", SHA-256: " +
+                actualSha256
+              );
+              return;
+            }
+
+            const tag = "v" + version;
+            let release;
+
+            try {
+              release = await github.rest.repos.getReleaseByTag({
+                owner,
+                repo,
+                tag
+              });
+
+              await github.rest.repos.updateRelease({
+                owner,
+                repo,
+                release_id: release.data.id,
+                name: "Sky Eye Air v" + version,
+                body: process.env.RELEASE_NOTES || "",
+                draft: false,
+                prerelease: false
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+
+              release = await github.rest.repos.createRelease({
+                owner,
+                repo,
+                tag_name: tag,
+                name: "Sky Eye Air v" + version,
+                body: process.env.RELEASE_NOTES || "",
+                draft: false,
+                prerelease: false
+              });
+            }
+
+            const assets = await github.paginate(
+              github.rest.repos.listReleaseAssets,
+              {
+                owner,
+                repo,
+                release_id: release.data.id,
+                per_page: 100
+              }
+            );
+
+            for (const asset of assets) {
+              if (asset.name === filename) {
+                await github.rest.repos.deleteReleaseAsset({
+                  owner,
+                  repo,
+                  asset_id: asset.id
+                });
+              }
+            }
+
+            const upload = await github.rest.repos.uploadReleaseAsset({
+              owner,
+              repo,
+              release_id: release.data.id,
+              name: filename,
+              data: binary,
+              headers: {
+                "content-type": "application/octet-stream",
+                "content-length": binary.length
+              }
+            });
+
+            core.info(
+              "Published firmware: " +
+              upload.data.browser_download_url
+            );
