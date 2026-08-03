@@ -4,11 +4,11 @@ Effective Date: August 03, 2026
 
 This repository hosts compiled firmware release assets (“Firmware”) for Sky Eye Air hardware devices (“Devices”), distributed by Sky Eye Innovations (“we,” “us,” or “our”). By downloading, installing, flashing, or otherwise using the Firmware — whether manually or automatically via over-the-air (OTA) update — you (“you” or “User”) agree to these Terms. If you do not agree, do not download or use the Firmware.
 
-A. License and Permitted Use
+1. License and Permitted Use
 
 	The Firmware is provided solely for use on genuine Sky Eye Air Devices. We grant you a limited, non-exclusive, non-transferable, revocable license to download and install the Firmware on Devices you own or are authorized to operate, for their intended purpose. All rights not expressly granted are reserved.
 
-B. Restrictions
+2. Restrictions
 
 	You may not, and may not permit any third party to:
 	
