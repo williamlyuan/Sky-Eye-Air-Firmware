@@ -1,4 +1,4 @@
-# Sky Eye Air - Terms of Service — Firmware Distribution
+# Sky Eye Air — Terms of Service — Firmware Distribution
 
 Effective Date: August 03, 2026
 
