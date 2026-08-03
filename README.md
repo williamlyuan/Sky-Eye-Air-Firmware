@@ -11,12 +11,18 @@ The Firmware is provided solely for use on genuine Sky Eye Air Devices. We grant
 2. Restrictions
 
 You may not, and may not permit any third party to:
-	•	Reverse engineer, decompile, disassemble, or attempt to derive the source code, structure, or algorithms of the Firmware, except to the limited extent this restriction is prohibited by applicable law;
-	•	Modify, adapt, translate, or create derivative works based on the Firmware;
-	•	Redistribute, resell, sublicense, rent, lease, or otherwise make the Firmware available to any third party;
-	•	Install or run the Firmware on any hardware other than genuine Sky Eye Air Devices;
-	•	Remove, alter, or obscure any copyright, trademark, or other proprietary notices;
-	•	Use the Firmware for any unlawful purpose or in violation of any applicable law or regulation.
+	
+•	Reverse engineer, decompile, disassemble, or attempt to derive the source code, structure, or algorithms of the Firmware, except to the limited extent this restriction is prohibited by applicable law;
+	
+•	Modify, adapt, translate, or create derivative works based on the Firmware;
+	
+•	Redistribute, resell, sublicense, rent, lease, or otherwise make the Firmware available to any third party;
+	
+•	Install or run the Firmware on any hardware other than genuine Sky Eye Air Devices;
+	
+•	Remove, alter, or obscure any copyright, trademark, or other proprietary notices;
+	
+•	Use the Firmware for any unlawful purpose or in violation of any applicable law or regulation.
 
 3. Ownership
 
