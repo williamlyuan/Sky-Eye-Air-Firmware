@@ -39,4 +39,4 @@ This license terminates automatically if you breach any of these Terms. Upon ter
 We may update these Terms at any time by posting a revised version in this repository. Your continued use of the Firmware after any change constitutes acceptance of the revised Terms. If any provision of these Terms is held unenforceable, the remaining provisions will remain in full effect.
 
 10. Contact
-For questions regarding these Terms, contact: [your contact email]
+For questions regarding these Terms, contact: support@skyeyeinnovations.com
